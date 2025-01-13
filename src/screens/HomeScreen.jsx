@@ -22,7 +22,7 @@ const styles = {
     },
     menu: {
         position: 'absolute',
-        bottom: height * 0.055,
+        bottom: height * 0.04,
         left: 0,
         right: 0
     }

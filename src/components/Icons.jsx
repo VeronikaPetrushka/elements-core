@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 
-const Icons = ({ type }) => {
+const Icons = ({ type, color }) => {
 
   let imageSource;
   let iconStyle = [styles.icon];
@@ -9,15 +9,16 @@ const Icons = ({ type }) => {
   switch (type) {
     case '1':
       imageSource = require('../assets/panel/1.png');
-      // iconStyle.push(styles.active);
       break;
     case '2':
       imageSource = require('../assets/panel/2.png');
-      // iconStyle.push(styles.active);
       break;
     case '3':
       imageSource = require('../assets/panel/3.png');
-      // iconStyle.push(styles.active);
+      break;
+    case 'romb':
+      imageSource = require('../assets/romb.png');
+      iconStyle.push({tintColor: color});
       break;
   }
 
