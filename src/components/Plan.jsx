@@ -52,38 +52,45 @@ const Plan = ({ category }) => {
     const checkIfSaved = async () => {
         try {
             const savedItems = JSON.parse(await AsyncStorage.getItem('saved')) || [];
-            const currentItem = getTipOrTask();
-            setIsSaved(savedItems.includes(currentItem));
+            const currentTip = getTipOrTask();
+            const currentItem = { category, tip: currentTip };
+            setIsSaved(
+                savedItems.some(
+                    item => item.category === currentItem.category && item.tip === currentItem.tip
+                )
+            );
         } catch (error) {
             console.error('Error checking saved items:', error);
         }
     };
-
+    
     const handleSave = async () => {
         try {
             const savedItems = JSON.parse(await AsyncStorage.getItem('saved')) || [];
-            const currentItem = getTipOrTask();
+            const currentTip = getTipOrTask();
+            const currentItem = { category, tip: currentTip };
             let updatedItems;
-
+    
             if (isSaved) {
-                updatedItems = savedItems.filter(item => item !== currentItem);
+                updatedItems = savedItems.filter(
+                    item => !(item.category === currentItem.category && item.tip === currentItem.tip)
+                );
             } else {
                 updatedItems = [...savedItems, currentItem];
             }
-
+    
             await AsyncStorage.setItem('saved', JSON.stringify(updatedItems));
             setIsSaved(!isSaved);
         } catch (error) {
             console.error('Error toggling save:', error);
         }
     };
-
+    
     const handleShare = async () => {
         try {
             const currentItem = getTipOrTask();
             await Share.share({
-                message: currentItem,
-                title: category,
+                message: `Daily Tip: ${currentItem}`,
             });
         } catch (error) {
             console.error('Error sharing item:', error);
