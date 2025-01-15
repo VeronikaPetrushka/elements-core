@@ -1,18 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, Text, Image, StyleSheet, View , Dimensions, Share} from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from "@react-navigation/native";
 import content from '../constants/content.js';
 import Icons from './Icons.jsx';
 
 const { height, width } = Dimensions.get('window');
 
 const Plan = ({ category }) => {
+    const navigation = useNavigation();
     const [isTask, setIsTask] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isSaved, setIsSaved] = useState(false);
     const [timeLeft, setTimeLeft] = useState(10 * 60);
     const [timer, setTimer] = useState(null);
     const [isStarted, setIsStarted] = useState(false);
+
+    const checkTipUpdate = async () => {
+        const savedData = JSON.parse(await AsyncStorage.getItem(`tip_${category}`)) || { time: 0, index: 0 };
+        const currentTime = new Date().getTime();
+        const elapsedTime = (currentTime - savedData.time) / (1000 * 60 * 60 * 24);
+
+        const tips = content.find(item => item.category === category)?.tips || [];
+
+        if (elapsedTime >= 1) {
+            const nextIndex = (savedData.index + 1) % tips.length;
+            await AsyncStorage.setItem(`tip_${category}`, JSON.stringify({ time: currentTime, index: nextIndex }));
+            setCurrentIndex(nextIndex);
+        } else {
+            setCurrentIndex(savedData.index);
+        }
+    };
+
+    useEffect(() => {
+        checkTipUpdate();
+    }, [category]);    
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            checkTipUpdate();
+        }, 60 * 60 * 1000);
+
+        return () => clearInterval(interval);
+    }, [category]);   
 
     useEffect(() => {
         checkIfSaved();
@@ -64,8 +94,8 @@ const Plan = ({ category }) => {
         if (isTask) {
             return filteredContent?.tasks[currentIndex % filteredContent.tasks.length];
         }
-        return filteredContent?.tips[0];
-    };
+        return filteredContent?.tips[currentIndex];
+    };    
 
     const generateNewTask = () => {
         setCurrentIndex(prevIndex => prevIndex + 1);
@@ -112,6 +142,7 @@ const Plan = ({ category }) => {
             setTimeLeft((prevTime) => {
                 if (prevTime <= 1) {
                     clearInterval(interval);
+                    checkTipUpdate();
                     return 0;
                 }
                 return prevTime - 1;
@@ -129,6 +160,7 @@ const Plan = ({ category }) => {
     
             if (isStarted && timeLeft === 0) {
                 handleTaskComplete();
+                navigation.navigate('HomeScreen')
             }
         }
     };
@@ -236,7 +268,7 @@ const Plan = ({ category }) => {
                         onPress={handleTask}
                         disabled={isStarted && timeLeft != 0}
                     >
-                        <Text style={styles.startBtnText}>{isStarted ? `Time left: ${formatTime(timeLeft)}` : timeLeft === 0 ? 'Done' : 'Start this task'}</Text>
+                        <Text style={styles.startBtnText}>{isStarted && timeLeft != 0 ? `Time left: ${formatTime(timeLeft)}` : timeLeft === 0 ? 'Done' : 'Start this task'}</Text>
                     </TouchableOpacity>
                     ) : (
                         <TouchableOpacity
