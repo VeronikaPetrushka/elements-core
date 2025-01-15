@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, Text, Image, StyleSheet, View , Dimensions, Share, ScrollView} from "react-native";
+import { TouchableOpacity, Text, Image, StyleSheet, View , Dimensions, Share, ScrollView } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icons from './Icons.jsx';
 
@@ -84,46 +84,51 @@ const Stats = () => {
                     ))}
                 </View>
 
-                <View style={styles.barsContainer}>
-                    {categories.map((category, index) => {
-                        const percentage = calculateCompletionPercentage(category);
-                        const barHeight = (percentage / 100) * 200;
+                <ScrollView style={{width: '100%'}}>
+                    <View style={styles.barsContainer}>
+                        {categories.map((category, index) => {
+                            const percentage = calculateCompletionPercentage(category);
+                            const barHeight = (percentage / 100) * 200;
 
-                        return (
-                            <View key={index} style={styles.barWrapper}>
-                                <Text style={styles.barPercentage}>{Math.round(percentage)}%</Text>
-                                <View style={styles.progressBarContainer}>
-                                    <View
-                                        style={[
-                                            styles.progressBarBackground,
-                                            { height: 200, backgroundColor: '#3d3d3d' }
-                                        ]}
-                                    />
-                                    <View
-                                        style={[
-                                            styles.progressBar,
-                                            { height: barHeight, backgroundColor: getResultColor(category).color }
-                                        ]}
-                                    />
+                            return (
+                                <View key={index} style={styles.barWrapper}>
+                                    <Text style={styles.barPercentage}>{Math.round(percentage)}%</Text>
+                                    <View style={styles.progressBarContainer}>
+                                        <View
+                                            style={[
+                                                styles.progressBarBackground,
+                                                { height: 200, backgroundColor: '#3d3d3d' }
+                                            ]}
+                                        />
+                                        <View
+                                            style={[
+                                                styles.progressBar,
+                                                { height: barHeight, backgroundColor: getResultColor(category).color }
+                                            ]}
+                                        />
+                                    </View>
                                 </View>
-                            </View>
-                        );
-                    })}
+                            );
+                        })}
 
-                </View>
-
-                <View style={styles.countContainer}>
-                    <View style={{alignItems: 'flex-start'}}>
-                        <Text style={[styles.text, {fontWeight: '700', marginBottom: 13}]}>{completedTasks.length}</Text>
-                        <Text style={styles.text}>Completed tasks</Text>
                     </View>
-                    <TouchableOpacity style={styles.toolBtn} onPress={handleShare}>
-                        <View style={[styles.romb, { marginRight: 10 }]}>
-                            <Icons type={'share'} />
+
+                    <View style={styles.countContainer}>
+                        <View style={{alignItems: 'flex-start'}}>
+                            <Text style={[styles.text, {fontWeight: '700', marginBottom: 13}]}>{completedTasks.length}</Text>
+                            <Text style={styles.text}>Completed tasks</Text>
                         </View>
-                        <Text style={styles.toolBtnText}>Share</Text>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity style={styles.toolBtn} onPress={handleShare}>
+                            <View style={[styles.romb, { marginRight: 10 }]}>
+                                <Icons type={'share'} />
+                            </View>
+                            <Text style={styles.toolBtnText}>Share</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={{ height: 220 }} />
+
+                </ScrollView>
 
             </View>
 

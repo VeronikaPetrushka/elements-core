@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, Text, Image, StyleSheet, View , Dimensions, Share} from "react-native";
+import { TouchableOpacity, Text, Image, StyleSheet, View , Dimensions, Share, ScrollView } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
 import content from '../constants/content.js';
 import Icons from './Icons.jsx';
 
 const { height, width } = Dimensions.get('window');
+const THRESHOLD_HEIGHT = 700;
 
 const Plan = ({ category }) => {
     const navigation = useNavigation();
     const [isTask, setIsTask] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isSaved, setIsSaved] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(10);
+    const [timeLeft, setTimeLeft] = useState(10 * 60);
     const [timer, setTimer] = useState(null);
     const [isStarted, setIsStarted] = useState(false);
     const [isDone, setIsDone] = useState(false);
@@ -144,7 +145,7 @@ const Plan = ({ category }) => {
 
     const startTask = () => {
         setIsTask(true);
-        setTimeLeft(10);
+        setTimeLeft(10 * 60);
         setIsStarted(true);
         const interval = setInterval(() => {
             setTimeLeft((prevTime) => {
@@ -180,7 +181,7 @@ const Plan = ({ category }) => {
 
     const handleTaskComplete = async () => {
         setIsTask(false);
-        setTimeLeft(10);
+        setTimeLeft(10 * 60);
         setIsStarted(false);
         setIsDone(true);
         if (timer) {
@@ -223,10 +224,10 @@ const Plan = ({ category }) => {
                         <Text style={[styles.title, {marginTop: -10}]}>That’s All for Today!</Text>
                         <Text style={[styles.text, {marginBottom: height * 0.02}]}>Great job completing today’s task and reflecting on your element! You’ve taken a step toward a more balanced and focused life.</Text>
         
-                        <TouchableOpacity style={[styles.startBtn, {marginBottom: 13}]} onPress={() => navigation.navigate('SavedScreen')}>
+                        <TouchableOpacity style={[styles.startBtn, {marginBottom: height <= THRESHOLD_HEIGHT ? 10 : 13}]} onPress={() => navigation.navigate('SavedScreen')}>
                             <Text style={styles.startBtnText}>View Saved Content</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity  style={[styles.startBtn, {marginBottom: 25}]} onPress={() => navigation.navigate('StatsScreen')}>
+                        <TouchableOpacity  style={[styles.startBtn, {marginBottom: height <= THRESHOLD_HEIGHT ? 10 : 25}]} onPress={() => navigation.navigate('StatsScreen')}>
                             <Text style={styles.startBtnText}>Check My Stats</Text>
                         </TouchableOpacity>
 
@@ -262,88 +263,94 @@ const Plan = ({ category }) => {
                             </View>
                         </View>
 
-                        <View style={{width: '100%', alignItems: 'center', paddingHorizontal: 35}}>
-                            <Text style={styles.title}>{isTask ? 'Daily Task' : category}</Text>
+                        <ScrollView style={{ width: '100% '}}>
+                            <View style={{width: '100%', alignItems: 'center', paddingHorizontal: 35}}>
+                                <Text style={styles.title}>{isTask ? 'Daily Task' : category}</Text>
 
-                            <View style={styles.contentContainer}>
-                                <View>
-                                    <View style={{width: '100%', flexDirection: 'row', alignItems: 'center', marginBottom: 13}}>
-                                        <View style={[styles.clock, {marginRight: 10, padding: 1.5}]}>
-                                            <Icons type={'romb'} color={getResultColor().color} />
+                                <View style={styles.contentContainer}>
+                                    <View>
+                                        <View style={{width: '100%', flexDirection: 'row', alignItems: 'center', marginBottom: 13}}>
+                                            <View style={[styles.clock, {marginRight: 10, padding: 1.5}]}>
+                                                <Icons type={'romb'} color={getResultColor().color} />
+                                            </View>
+                                            <Text style={[styles.text, {fontWeight: '700'}]}>{isTask ? "Your task:" : "Daily tip:"}</Text>
                                         </View>
-                                        <Text style={[styles.text, {fontWeight: '700'}]}>{isTask ? "Your task:" : "Daily tip:"}</Text>
+                                        <Text style={[styles.text, {marginBottom: 18}]}>{getTipOrTask()}</Text>
+                                        {
+                                            !isTask && (
+                                                <View style={{width: '100%', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row'}}>
+                                                    <TouchableOpacity style={styles.toolBtn} onPress={handleSave}>
+                                                        <View style={[styles.clock, {marginRight: 10}]}>
+                                                            <Icons type={'save'} />
+                                                        </View>
+                                                        <Text style={styles.toolBtnText}>{isSaved ? 'Saved' : 'Save'}</Text>
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity style={styles.toolBtn} onPress={handleShare}>
+                                                        <View style={[styles.clock, {marginRight: 10}]}>
+                                                            <Icons type={'share'} />
+                                                        </View>
+                                                        <Text style={styles.toolBtnText}>Share</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            )
+                                        }
+                                        {isTask && (
+                                            <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center' }}>
+                                                <View style={[styles.clock, { marginRight: 10 }]}>
+                                                    <Icons type={'clock'} color={getResultColor().color} />
+                                                </View>
+                                                <Text style={[styles.text, { fontWeight: '700' }]}> Estimated time:
+                                                    <Text style={{ fontWeight: '400' }}> 10 minutes</Text>
+                                                </Text>
+                                            </View>
+                                        )}
                                     </View>
-                                    <Text style={[styles.text, {marginBottom: 18}]}>{getTipOrTask()}</Text>
-                                    {
-                                        !isTask && (
-                                            <View style={{width: '100%', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row'}}>
-                                                <TouchableOpacity style={styles.toolBtn} onPress={handleSave}>
-                                                    <View style={[styles.clock, {marginRight: 10}]}>
-                                                        <Icons type={'save'} />
-                                                    </View>
-                                                    <Text style={styles.toolBtnText}>{isSaved ? 'Saved' : 'Save'}</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity style={styles.toolBtn} onPress={handleShare}>
-                                                    <View style={[styles.clock, {marginRight: 10}]}>
-                                                        <Icons type={'share'} />
-                                                    </View>
-                                                    <Text style={styles.toolBtnText}>Share</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                        )
-                                    }
-                                    {isTask && (
-                                        <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center' }}>
-                                            <View style={[styles.clock, { marginRight: 10 }]}>
-                                                <Icons type={'clock'} color={getResultColor().color} />
-                                            </View>
-                                            <Text style={[styles.text, { fontWeight: '700' }]}> Estimated time:
-                                                <Text style={{ fontWeight: '400' }}> 10 minutes</Text>
-                                            </Text>
-                                        </View>
-                                    )}
                                 </View>
-                            </View>
 
-                            {
-                                isTask ? (
-                                <TouchableOpacity
-                                    style={[
-                                        styles.startBtn,
-                                        { backgroundColor: getResultColor().color},
-                                        isStarted && timeLeft != 0 && {backgroundColor: '#3d3d3d', borderWidth: 1, borderColor: getResultColor().color}
-                                    ]}
-                                    onPress={handleTask}
-                                    disabled={isStarted && timeLeft != 0}
-                                >
-                                    <Text style={styles.startBtnText}>{isStarted && timeLeft != 0 ? `Time left: ${formatTime(timeLeft)}` : timeLeft === 0 ? 'Done' : 'Start this task'}</Text>
-                                </TouchableOpacity>
-                                ) : (
+                                {
+                                    isTask ? (
                                     <TouchableOpacity
                                         style={[
                                             styles.startBtn,
-                                            { backgroundColor: getResultColor().color },
+                                            { backgroundColor: getResultColor().color},
+                                            isStarted && timeLeft != 0 && {backgroundColor: '#3d3d3d', borderWidth: 1, borderColor: getResultColor().color}
                                         ]}
-                                        onPress={() => setIsTask(!isTask)}
+                                        onPress={handleTask}
+                                        disabled={isStarted && timeLeft != 0}
                                     >
-                                        <Text style={styles.startBtnText}>Catch this</Text>
+                                        <Text style={styles.startBtnText}>{isStarted && timeLeft != 0 ? `Time left: ${formatTime(timeLeft)}` : timeLeft === 0 ? 'Done' : 'Start this task'}</Text>
                                     </TouchableOpacity>
-                                )
-                            }
+                                    ) : (
+                                        <TouchableOpacity
+                                            style={[
+                                                styles.startBtn,
+                                                { backgroundColor: getResultColor().color },
+                                            ]}
+                                            onPress={() => setIsTask(!isTask)}
+                                        >
+                                            <Text style={styles.startBtnText}>Catch this</Text>
+                                        </TouchableOpacity>
+                                    )
+                                }
 
-                            { isTask && !isStarted && (
-                                <TouchableOpacity
-                                style={[
-                                    styles.startBtn,
-                                    { backgroundColor: 'transparent', },
-                                ]}
-                                onPress={generateNewTask}
-                            >
-                                <Text style={styles.startBtnText}>Generate new task</Text>
-                            </TouchableOpacity>
-                            )}
+                                { isTask && !isStarted && (
+                                    <TouchableOpacity
+                                    style={[
+                                        styles.startBtn,
+                                        { backgroundColor: 'transparent', },
+                                    ]}
+                                    onPress={generateNewTask}
+                                >
+                                    <Text style={styles.startBtnText}>Generate new task</Text>
+                                </TouchableOpacity>
+                                )}
 
-                        </View>
+                            </View>
+
+                        <View style={{ height: 220 }} />
+
+                        </ScrollView>
+
                     </View>
                 )
             }
@@ -379,7 +386,8 @@ const styles = StyleSheet.create({
     },
     startContainer: {
         width: '104%',
-        padding: 32,
+        paddingHorizontal: 32,
+        paddingVertical: height <= THRESHOLD_HEIGHT ? 20 : 32,
         alignItems: 'center',
         justifyContent: 'flex-start',
         borderWidth: 1,
@@ -409,7 +417,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
-        marginBottom: 38,
+        marginBottom: height <= THRESHOLD_HEIGHT ? 25 : 38,
     },
     romb: {
         width: 12,
@@ -429,7 +437,7 @@ const styles = StyleSheet.create({
     },
     date: {
         color: '#fff',
-        fontSize: 14,
+        fontSize: height <= THRESHOLD_HEIGHT ? 12 : 14,
         fontWeight: '400',
     },
     contentContainer: {
@@ -439,26 +447,26 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         backgroundColor: '#3d3d3d',
         borderRadius: 12,
-        marginBottom: 26
+        marginBottom: height <= THRESHOLD_HEIGHT ? 15 : 26
     },
     title: {
         color: '#fff',
-        fontSize: 22,
+        fontSize: height <= THRESHOLD_HEIGHT ? 18 : 22,
         fontWeight: '600',
         textAlign: 'center',
-        marginBottom: height * 0.03,
-        lineHeight: 26
+        marginBottom: height <= THRESHOLD_HEIGHT ? height * 0.015 : height * 0.03,
+        lineHeight: height <= THRESHOLD_HEIGHT ? 24 : 26
     },
     text: {
         fontWeight: '400',
-        fontSize: 17,
+        fontSize: height <= THRESHOLD_HEIGHT ? 15 : 17,
         color: '#fff',
         textAlign: 'left',
-        lineHeight: 20
+        lineHeight: height <= THRESHOLD_HEIGHT ? 19 : 20
     },
     startBtn: {
         width: '100%',
-        padding: height * 0.03,
+        padding: height <= THRESHOLD_HEIGHT ? 15 : 30,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 12,

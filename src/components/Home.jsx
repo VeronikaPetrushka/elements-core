@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, Text, Image, StyleSheet, View , Dimensions} from "react-native";
+import { TouchableOpacity, Text, Image, StyleSheet, View , Dimensions, ScrollView} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import test from '../constants/test.js';
 import Icons from './Icons.jsx';
 
 const { height, width } = Dimensions.get('window');
+const THRESHOLD_HEIGHT = 700;
 
 const Home = () => {
     const navigation = useNavigation();
@@ -127,16 +128,14 @@ const Home = () => {
         }
     }
 
-    console.log('completed:', completed)
-    console.log('answer:', selectedAnswer)
-    console.log('category:', selectedCategory)
-    console.log('result category:', resultCategory)
-    console.log('category counts:', categoryCounts)
-
     return (
         <View style={styles.container}>
 
-            <View style={[styles.logoContainer, getLogoContainerStyle(), completed && {borderColor: getResultColor().color, shadowColor: getResultColor().color}]}> 
+            <View style={[styles.logoContainer, 
+                    getLogoContainerStyle(), 
+                    completed && {borderColor: getResultColor().color, shadowColor: getResultColor().color},
+                ]}
+                    > 
                 <Image source={require('../assets/logo.png')} style={styles.logo} />
             </View>
 
@@ -195,10 +194,11 @@ const Home = () => {
                         >
                             <Text style={styles.startBtnText}>Next</Text>
                         </TouchableOpacity>
+
                     </View>
                 ) :
                 completed ? (
-                    <View style={{ width: '100%', alignItems: 'center', paddingHorizontal: 37, marginTop: height * 0.02}}>
+                    <View style={{ width: '100%', alignItems: 'center', paddingHorizontal: 37, marginTop: height <= THRESHOLD_HEIGHT ? 0 : height * 0.02}}>
                         <View style={[styles.dateDecor,  { borderColor: getResultColor().color} ]}>
                             <View style={[styles.romb, {marginRight: 10}]}>
                                 <Icons type={'romb'} color={getResultColor().color} />
@@ -282,7 +282,6 @@ const styles = StyleSheet.create({
         width: width,
         height: width,
         borderRadius: 300,
-        marginBottom: height * 0.04,
         alignItems: 'center',
         backgroundColor: '#3d3d3d',
         position: 'absolute',
@@ -296,9 +295,9 @@ const styles = StyleSheet.create({
         bottom: 55
     },
     startContainer: {
-        marginTop: height * 0.03,
+        marginTop: height <= THRESHOLD_HEIGHT ? 0.01 : height * 0.03,
         width: '104%',
-        height: 400,
+        height: height <= THRESHOLD_HEIGHT ? 350 : 400,
         padding: 32,
         alignItems: 'center',
         justifyContent: 'flex-start',
@@ -328,7 +327,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
-        marginBottom: 20,
+        marginBottom: height <= THRESHOLD_HEIGHT ? 8 : 20,
     },
     romb: {
         width: 12,
@@ -344,15 +343,15 @@ const styles = StyleSheet.create({
     },
     date: {
         color: '#fff',
-        fontSize: 14,
+        fontSize: height <= THRESHOLD_HEIGHT ? 12 : 14,
         fontWeight: '400',
     },
     title: {
         color: '#fff',
-        fontSize: 18,
+        fontSize: height <= THRESHOLD_HEIGHT ? 16 : 18,
         fontWeight: '600',
         textAlign: 'center',
-        marginBottom: height * 0.03,
+        marginBottom: height <= THRESHOLD_HEIGHT ? 10 : height * 0.03,
         lineHeight: 28.18
     },
     text: {
@@ -365,7 +364,7 @@ const styles = StyleSheet.create({
     },
     startBtn: {
         width: '100%',
-        padding: height * 0.03,
+        padding: height <= THRESHOLD_HEIGHT ? 10 : 30,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 12,
@@ -379,11 +378,11 @@ const styles = StyleSheet.create({
     },
     answersContainer: {
         width: '100%',
-        marginBottom: height * 0.016
+        marginBottom: height <= THRESHOLD_HEIGHT ? height * 0.007 : height * 0.016
     },
     answerButton: {
         width: '100%',
-        paddingVertical: 15,
+        paddingVertical: height <= THRESHOLD_HEIGHT ? 7 : 15,
         paddingHorizontal: 23,
         alignItems: 'center',
         justifyContent: 'center',
@@ -398,7 +397,7 @@ const styles = StyleSheet.create({
     },
     answerText: {
         fontWeight: '400',
-        fontSize: 17,
+        fontSize: height <= THRESHOLD_HEIGHT ? 15 : 17,
         color: '#fff',
         textAlign: 'center',
         lineHeight: 20
