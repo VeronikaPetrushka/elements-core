@@ -12,7 +12,7 @@ const Plan = ({ category }) => {
     const [isTask, setIsTask] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isSaved, setIsSaved] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(10 * 60);
+    const [timeLeft, setTimeLeft] = useState(10);
     const [timer, setTimer] = useState(null);
     const [isStarted, setIsStarted] = useState(false);
     const [isDone, setIsDone] = useState(false);
@@ -144,7 +144,7 @@ const Plan = ({ category }) => {
 
     const startTask = () => {
         setIsTask(true);
-        setTimeLeft(10 * 60);
+        setTimeLeft(10);
         setIsStarted(true);
         const interval = setInterval(() => {
             setTimeLeft((prevTime) => {
@@ -178,14 +178,26 @@ const Plan = ({ category }) => {
         return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
     };
 
-    const handleTaskComplete = () => {
+    const handleTaskComplete = async () => {
         setIsTask(false);
-        setTimeLeft(10 * 60);
+        setTimeLeft(10);
         setIsStarted(false);
         setIsDone(true);
         if (timer) {
             clearInterval(timer);
             setTimer(null);
+        }
+
+        try {
+            const currentTask = getTipOrTask();
+            const completedItems = JSON.parse(await AsyncStorage.getItem('completed')) || [];
+            const newItem = { category, task: currentTask };
+            const updatedCompletedItems = [...completedItems, newItem];
+            await AsyncStorage.setItem('completed', JSON.stringify(updatedCompletedItems));
+
+            console.log('completed tasks:', completedItems)
+        } catch (error) {
+            console.error('Error saving completed task:', error);
         }
     };
 
