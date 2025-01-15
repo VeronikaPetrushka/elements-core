@@ -15,6 +15,7 @@ const Plan = ({ category }) => {
     const [timeLeft, setTimeLeft] = useState(10 * 60);
     const [timer, setTimer] = useState(null);
     const [isStarted, setIsStarted] = useState(false);
+    const [isDone, setIsDone] = useState(false);
 
     const checkTipUpdate = async () => {
         const savedData = JSON.parse(await AsyncStorage.getItem(`tip_${category}`)) || { time: 0, index: 0 };
@@ -160,7 +161,6 @@ const Plan = ({ category }) => {
     
             if (isStarted && timeLeft === 0) {
                 handleTaskComplete();
-                navigation.navigate('HomeScreen')
             }
         }
     };
@@ -174,6 +174,8 @@ const Plan = ({ category }) => {
     const handleTaskComplete = () => {
         setIsTask(false);
         setTimeLeft(10 * 60);
+        setIsStarted(false);
+        setIsDone(true);
         if (timer) {
             clearInterval(timer);
             setTimer(null);
@@ -187,115 +189,145 @@ const Plan = ({ category }) => {
                 <Image source={require('../assets/logo.png')} style={styles.logo} />
             </View>
 
-            <View style={styles.dotsContainer}>
-                <View
-                    style={[
-                        styles.dot,
-                        { backgroundColor: getResultColor().color },
-                    ]}
-                />
-                <View
-                    style={[
-                        styles.dot,
-                        isTask && { backgroundColor: getResultColor().color },
-                    ]}
-                />
-            </View>
+            {
+                isDone ? (
+                    <View style={styles.startContainer}>
 
-            <View style={[styles.dateDecor,  { borderColor: getResultColor().color} ]}>
-                <View style={[styles.romb, {marginRight: 10}]}>
-                    <Icons type={'romb'} color={getResultColor().color} />
-                </View>
-                <View style={[styles.dateContainer,  { borderColor: getResultColor().color}]}>
-                    <Text style={styles.date}>{getCurrentDate()}</Text>
-                </View>
-                <View style={[styles.romb, {marginLeft: 10}]}>
-                    <Icons type={'romb'} color={getResultColor().color} />
-                </View>
-            </View>
+                        <View style={styles.dateDecor}>
+                            <Image source={require('../assets/romb.png')} style={[styles.romb, {marginRight: 10}]} />
+                            <View style={styles.dateContainer}>
+                                <Text style={styles.date}>{getCurrentDate()}</Text>
+                            </View>
+                            <Image source={require('../assets/romb.png')} style={[styles.romb, {marginLeft: 10}]} />
+                        </View>
+        
+                        <Text style={[styles.title, {marginTop: -10}]}>That’s All for Today!</Text>
+                        <Text style={[styles.text, {marginBottom: height * 0.02}]}>Great job completing today’s task and reflecting on your element! You’ve taken a step toward a more balanced and focused life.</Text>
+        
+                        <TouchableOpacity style={[styles.startBtn, {marginBottom: 13}]} onPress={() => navigation.navigate('SavedScreen')}>
+                            <Text style={styles.startBtnText}>View Saved Content</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity  style={[styles.startBtn, {marginBottom: 25}]} onPress={() => navigation.navigate('StatsScreen')}>
+                            <Text style={styles.startBtnText}>Check My Stats</Text>
+                        </TouchableOpacity>
 
-            <View style={{width: '100%', alignItems: 'center', paddingHorizontal: 35}}>
-                <Text style={styles.title}>{isTask ? 'Daily Task' : category}</Text>
+                        <Text style={[styles.text, {fontStyle: 'italic'}]}>Consistency is key. Come back tomorrow for a new element and new opportunities for growth!</Text>
+                    </View>    
+                ) : (
+                    <View style={{width: '100%', alignItems: 'center'}}>
 
-                <View style={styles.contentContainer}>
-                    <View>
-                        <View style={{width: '100%', flexDirection: 'row', alignItems: 'center', marginBottom: 13}}>
-                            <View style={[styles.clock, {marginRight: 10, padding: 1.5}]}>
+                        <View style={styles.dotsContainer}>
+                            <View
+                                style={[
+                                    styles.dot,
+                                    { backgroundColor: getResultColor().color },
+                                ]}
+                            />
+                            <View
+                                style={[
+                                    styles.dot,
+                                    isTask && { backgroundColor: getResultColor().color },
+                                ]}
+                            />
+                        </View>
+
+                        <View style={[styles.dateDecor,  { borderColor: getResultColor().color} ]}>
+                            <View style={[styles.romb, {marginRight: 10}]}>
                                 <Icons type={'romb'} color={getResultColor().color} />
                             </View>
-                            <Text style={[styles.text, {fontWeight: '700'}]}>{isTask ? "Your task:" : "Daily tip:"}</Text>
-                        </View>
-                        <Text style={[styles.text, {marginBottom: 18}]}>{getTipOrTask()}</Text>
-                        {
-                            !isTask && (
-                                <View style={{width: '100%', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row'}}>
-                                    <TouchableOpacity style={styles.toolBtn} onPress={handleSave}>
-                                        <View style={[styles.clock, {marginRight: 10}]}>
-                                            <Icons type={'save'} />
-                                        </View>
-                                        <Text style={styles.toolBtnText}>{isSaved ? 'Saved' : 'Save'}</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.toolBtn} onPress={handleShare}>
-                                        <View style={[styles.clock, {marginRight: 10}]}>
-                                            <Icons type={'share'} />
-                                        </View>
-                                        <Text style={styles.toolBtnText}>Share</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )
-                        }
-                        {isTask && (
-                            <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center' }}>
-                                <View style={[styles.clock, { marginRight: 10 }]}>
-                                    <Icons type={'clock'} color={getResultColor().color} />
-                                </View>
-                                <Text style={[styles.text, { fontWeight: '700' }]}> Estimated time:
-                                    <Text style={{ fontWeight: '400' }}> 10 minutes</Text>
-                                </Text>
+                            <View style={[styles.dateContainer,  { borderColor: getResultColor().color}]}>
+                                <Text style={styles.date}>{getCurrentDate()}</Text>
                             </View>
-                        )}
+                            <View style={[styles.romb, {marginLeft: 10}]}>
+                                <Icons type={'romb'} color={getResultColor().color} />
+                            </View>
+                        </View>
+
+                        <View style={{width: '100%', alignItems: 'center', paddingHorizontal: 35}}>
+                            <Text style={styles.title}>{isTask ? 'Daily Task' : category}</Text>
+
+                            <View style={styles.contentContainer}>
+                                <View>
+                                    <View style={{width: '100%', flexDirection: 'row', alignItems: 'center', marginBottom: 13}}>
+                                        <View style={[styles.clock, {marginRight: 10, padding: 1.5}]}>
+                                            <Icons type={'romb'} color={getResultColor().color} />
+                                        </View>
+                                        <Text style={[styles.text, {fontWeight: '700'}]}>{isTask ? "Your task:" : "Daily tip:"}</Text>
+                                    </View>
+                                    <Text style={[styles.text, {marginBottom: 18}]}>{getTipOrTask()}</Text>
+                                    {
+                                        !isTask && (
+                                            <View style={{width: '100%', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row'}}>
+                                                <TouchableOpacity style={styles.toolBtn} onPress={handleSave}>
+                                                    <View style={[styles.clock, {marginRight: 10}]}>
+                                                        <Icons type={'save'} />
+                                                    </View>
+                                                    <Text style={styles.toolBtnText}>{isSaved ? 'Saved' : 'Save'}</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={styles.toolBtn} onPress={handleShare}>
+                                                    <View style={[styles.clock, {marginRight: 10}]}>
+                                                        <Icons type={'share'} />
+                                                    </View>
+                                                    <Text style={styles.toolBtnText}>Share</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        )
+                                    }
+                                    {isTask && (
+                                        <View style={{ width: '100%', flexDirection: 'row', alignItems: 'center' }}>
+                                            <View style={[styles.clock, { marginRight: 10 }]}>
+                                                <Icons type={'clock'} color={getResultColor().color} />
+                                            </View>
+                                            <Text style={[styles.text, { fontWeight: '700' }]}> Estimated time:
+                                                <Text style={{ fontWeight: '400' }}> 10 minutes</Text>
+                                            </Text>
+                                        </View>
+                                    )}
+                                </View>
+                            </View>
+
+                            {
+                                isTask ? (
+                                <TouchableOpacity
+                                    style={[
+                                        styles.startBtn,
+                                        { backgroundColor: getResultColor().color},
+                                        isStarted && timeLeft != 0 && {backgroundColor: '#3d3d3d', borderWidth: 1, borderColor: getResultColor().color}
+                                    ]}
+                                    onPress={handleTask}
+                                    disabled={isStarted && timeLeft != 0}
+                                >
+                                    <Text style={styles.startBtnText}>{isStarted && timeLeft != 0 ? `Time left: ${formatTime(timeLeft)}` : timeLeft === 0 ? 'Done' : 'Start this task'}</Text>
+                                </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.startBtn,
+                                            { backgroundColor: getResultColor().color },
+                                        ]}
+                                        onPress={() => setIsTask(!isTask)}
+                                    >
+                                        <Text style={styles.startBtnText}>Catch this</Text>
+                                    </TouchableOpacity>
+                                )
+                            }
+
+                            { isTask && !isStarted && (
+                                <TouchableOpacity
+                                style={[
+                                    styles.startBtn,
+                                    { backgroundColor: 'transparent', },
+                                ]}
+                                onPress={generateNewTask}
+                            >
+                                <Text style={styles.startBtnText}>Generate new task</Text>
+                            </TouchableOpacity>
+                            )}
+
+                        </View>
                     </View>
-                </View>
-
-                {
-                    isTask ? (
-                    <TouchableOpacity
-                        style={[
-                            styles.startBtn,
-                            { backgroundColor: getResultColor().color},
-                            isStarted && timeLeft != 0 && {backgroundColor: '#3d3d3d', borderWidth: 1, borderColor: getResultColor().color}
-                        ]}
-                        onPress={handleTask}
-                        disabled={isStarted && timeLeft != 0}
-                    >
-                        <Text style={styles.startBtnText}>{isStarted && timeLeft != 0 ? `Time left: ${formatTime(timeLeft)}` : timeLeft === 0 ? 'Done' : 'Start this task'}</Text>
-                    </TouchableOpacity>
-                    ) : (
-                        <TouchableOpacity
-                            style={[
-                                styles.startBtn,
-                                { backgroundColor: getResultColor().color },
-                            ]}
-                            onPress={() => setIsTask(!isTask)}
-                        >
-                            <Text style={styles.startBtnText}>Catch this</Text>
-                        </TouchableOpacity>
-                    )
-                }
-
-                { isTask && !isStarted && (
-                    <TouchableOpacity
-                    style={[
-                        styles.startBtn,
-                        { backgroundColor: 'transparent', },
-                    ]}
-                    onPress={generateNewTask}
-                >
-                    <Text style={styles.startBtnText}>Generate new task</Text>
-                </TouchableOpacity>
-                )}
-
-            </View>
+                )
+            }
 
         </View>
     )
@@ -325,6 +357,17 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         position: 'absolute',
         bottom: 55
+    },
+    startContainer: {
+        width: '104%',
+        padding: 32,
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        borderWidth: 1,
+        borderRadius: 22,
+        borderColor: '#ff4747',
+        borderBottomColor: 'transparent',
+        backgroundColor: '#2b2b2b'
     },
     dotsContainer: {
         width: '100%',
