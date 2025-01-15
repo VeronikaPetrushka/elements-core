@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, Text, Image, StyleSheet, View , Dimensions} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import test from '../constants/test.js';
 import Icons from './Icons.jsx';
 
 const { height, width } = Dimensions.get('window');
 
 const Home = () => {
+    const navigation = useNavigation();
     const [started, setStarted] = useState(false);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -181,7 +183,7 @@ const Home = () => {
                                         <Image source={require('../assets/romb.png')} style={[styles.romb, {marginRight: 18}]} />
                                     )
                                 }
-                                <Text style={styles.answerText}>{answer.text}</Text>
+                                <Text style={[styles.answerText,  selectedAnswer === answer.text && {fontWeight: '600'}]}>{answer.text}</Text>
                             </TouchableOpacity>
                         ))}
                         </View>
@@ -197,7 +199,7 @@ const Home = () => {
                 ) :
                 completed ? (
                     <View style={{ width: '100%', alignItems: 'center', paddingHorizontal: 37, marginTop: height * 0.02}}>
-                         <View style={[styles.dateDecor,  { borderColor: getResultColor().color} ]}>
+                        <View style={[styles.dateDecor,  { borderColor: getResultColor().color} ]}>
                             <View style={[styles.romb, {marginRight: 10}]}>
                                 <Icons type={'romb'} color={getResultColor().color} />
                             </View>
@@ -239,6 +241,7 @@ const Home = () => {
                                 styles.startBtn,
                                 { backgroundColor: getResultColor().color },
                             ]}
+                            onPress={() => navigation.navigate('PlanScreen', {category: resultCategory})}
                         >
                             <Text style={styles.startBtnText}>View My Plan</Text>
                         </TouchableOpacity>

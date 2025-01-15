@@ -20,6 +20,16 @@ const Icons = ({ type, color }) => {
       imageSource = require('../assets/romb.png');
       iconStyle.push({tintColor: color});
       break;
+    case 'clock':
+      imageSource = require('../assets/clock.png');
+      iconStyle.push({tintColor: color});
+      break;
+    case 'save':
+      imageSource = require('../assets/save.png');
+      break;
+    case 'share':
+      imageSource = require('../assets/share.png');
+      break;
   }
 
   return (
