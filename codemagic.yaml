@@ -4,13 +4,13 @@ workflows:
         max_build_duration: 120
         instance_type: mac_mini_m1
         integrations:
-          app_store_connect: Elements Core Journey API key
+          app_store_connect: Elements Core API key
         environment:
           ios_signing:
             distribution_type: app_store
             bundle_identifier: com.elementsCore2024
           vars:
-            APP_STORE_APPLE_ID: 6740209855
+            APP_STORE_APPLE_ID: 6740558767
             BUNDLE_ID: "com.elementsCore2024"
             XCODE_WORKSPACE: "ElementsCore.xcworkspace"
             XCODE_SCHEME: "ElementsCore"
