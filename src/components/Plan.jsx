@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, Text, Image, StyleSheet, View , Dimensions, Share, ScrollView } from "react-native";
+import { TouchableOpacity, Text, Image, StyleSheet, View , Dimensions, Share, ScrollView, ImageBackground } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
 import content from '../constants/content.js';
@@ -203,6 +203,7 @@ const Plan = ({ category }) => {
     };
 
     return (
+        <ImageBackground source={require('../assets/back.png')} style={{flex: 1}}>
         <View style={styles.container}>
 
             <View style={[styles.logoContainer, category && {borderColor: getResultColor().color, shadowColor: getResultColor().color}]}> 
@@ -356,6 +357,7 @@ const Plan = ({ category }) => {
             }
 
         </View>
+        </ImageBackground>
     )
 };
 
@@ -364,7 +366,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         alignItems: 'center',
-        backgroundColor: '#1f1f1f',
         paddingTop: height * 0.27
     },
     logoContainer: {

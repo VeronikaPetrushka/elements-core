@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, Text, Image, StyleSheet, View , Dimensions, Share, ScrollView } from "react-native";
+import { TouchableOpacity, Text, Image, StyleSheet, View , Dimensions, Share, ScrollView, ImageBackground } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icons from './Icons.jsx';
 
@@ -62,6 +62,7 @@ const Stats = () => {
     };
 
     return (
+        <ImageBackground source={require('../assets/back.png')} style={{flex: 1}}>
         <View style={styles.container}>
 
             <View style={styles.logoContainer}> 
@@ -133,6 +134,7 @@ const Stats = () => {
             </View>
 
         </View>
+        </ImageBackground>
     )
 };
 
@@ -141,7 +143,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         alignItems: 'center',
-        backgroundColor: '#1f1f1f',
         paddingTop: height * 0.27
     },
     logoContainer: {

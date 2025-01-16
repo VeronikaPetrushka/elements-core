@@ -18,7 +18,7 @@ const OnBoarding = () => {
     };
 
     return (
-        <ImageBackground>
+        <ImageBackground source={require('../assets/back.png')} style={{flex: 1}}>
         <View style={styles.container}>
 
             <Image source={require('../assets/logo.png')} style={styles.logo} />
@@ -100,7 +100,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingTop: height * 0.16,
-        backgroundColor: '#1f1f1f'
     },
     logo: {
         width: 264,

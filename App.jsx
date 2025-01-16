@@ -17,65 +17,44 @@ const Stack = createStackNavigator();
 
 const App = () => {
     const [loaderIsEnded, setLoaderIsEnded] = useState(false);
-  
-    const firstImageAnim = useRef(new Animated.Value(0)).current;
-    const secondImageAnim = useRef(new Animated.Value(0)).current;
-    const thirdImageAnim = useRef(new Animated.Value(0)).current;
 
-    const loader1 = require('./src/assets/loaders/1.png');
-    const loader2 = require('./src/assets/loaders/2.png');
-    const loader3 = require('./src/assets/loaders/3.png');
+    const loaderAnim = useRef(new Animated.Value(0)).current;
 
+    const firstLoaderImage = require('./src/assets/loaders/1.png');
+    const secondLoaderImage = require('./src/assets/loaders/2.png');
+
+    const [currentLoader, setCurrentLoader] = useState(firstLoaderImage);
     useEffect(() => {
-        Animated.sequence([
-            Animated.timing(firstImageAnim, {
+        Animated.timing(loaderAnim, {
+            toValue: 1,
+            duration: 1500,
+            useNativeDriver: true,
+        }).start(() => {
+            setCurrentLoader(secondLoaderImage);
+
+            loaderAnim.setValue(0);
+            Animated.timing(loaderAnim, {
                 toValue: 1,
-                duration: 1500,
+                duration: 2000,
                 useNativeDriver: true,
-            }),
-            Animated.timing(firstImageAnim, {
-                toValue: 0,
-                duration: 1500,
-                useNativeDriver: true,
-            }),
-            Animated.timing(secondImageAnim, {
-                toValue: 1,
-                duration: 1500,
-                useNativeDriver: true,
-            }),
-            Animated.timing(secondImageAnim, {
-                toValue: 0,
-                duration: 1500,
-                useNativeDriver: true,
-            }),
-            Animated.timing(thirdImageAnim, {
-                toValue: 1,
-                duration: 1500,
-                useNativeDriver: true,
-            }),
-        ]).start(() => {
-            setLoaderIsEnded(true);
+            }).start(() => {
+                setLoaderIsEnded(true);
+            });
         });
     }, []);
-  return (
+    
+    return (
       <NavigationContainer>
         {
                 !loaderIsEnded ? (
-                    <View style={styles.container}>
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <Animated.Image
-                                source={loader1}
-                                style={[styles.image1, { opacity: firstImageAnim }]}
-                            />
-                            <Animated.Image
-                                source={loader2}
-                                style={[styles.image2, { opacity: secondImageAnim }]}
-                            />
-                            <Animated.Image
-                                source={loader3}
-                                style={[styles.image3, { opacity: thirdImageAnim }]}
-                            />
-                        </View>
+                    <View style={{ flex: 1 }}>
+                        <ImageBackground style={{ flex: 1 }} source={currentLoader}>
+                            <View style={styles.container}>
+                                <Animated.View style={[styles.imageContainer, { opacity: loaderAnim }]}>
+                                    <ImageBackground source={currentLoader} style={styles.image} />
+                                </Animated.View>
+                            </View>
+                        </ImageBackground>
                     </View>
                 ) : (
               <Stack.Navigator initialRouteName="OnBoardingScreen">
@@ -114,29 +93,18 @@ const App = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
+        justifyContent: 'center',
+    },
+    imageContainer: {
         width: '100%',
         height: '100%',
-        backgroundColor: '#1f1f1f',
-    },
-    image1: {
-        width: 105,
-        height: 110,
         position: 'absolute',
-        top: '40%'
     },
-    image2: {
-        width: 172,
-        height: 170,
-        position: 'absolute',
-        top: '40%'
-    },
-    image3: {
-        width: 264,
-        height: 175,
-        position: 'absolute',
-        top: '42%'
+    image: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
     },
 });
 
